@@ -12,9 +12,12 @@ else
       INSTALL=$1
 fi
 
-cp ./build/gestures $INSTALL/gestures
-sed -e 's|/usr/bin|'$INSTALL'|g' -i ./build/org.cunidev.gestures.desktop 
-cp ./build/org.cunidev.gestures.desktop /usr/share/applications/
-cp ./data/org.cunidev.gestures.svg /usr/share/icons/hicolor/scalable/apps
+
+cp ./data/org.cunidev.gestures.desktop ./build/org.cunidev.gestures.desktop
+sed -e 's|/usr/bin|'$INSTALL'|g' -i ./build/org.cunidev.gestures.desktop  # set .desktop executable path
+
+install -Dm00755 ./build/gestures $INSTALL/gestures
+install -Dm00755 ./build/org.cunidev.gestures.desktop /usr/share/applications/org.cunidev.gestures.desktop
+install -Dm00755 ./data/org.cunidev.gestures.svg /usr/share/icons/hicolor/scalable/apps/org.cunidev.gestures.svg
 
 echo "Installed to $INSTALL/gestures!"
