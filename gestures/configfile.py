@@ -1,7 +1,7 @@
 from subprocess import call, Popen
 import os.path
 from shutil import copyfile
-from gesture import Gesture
+from gestures.gesture import Gesture
 import re
 
 

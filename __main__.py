@@ -1,4 +1,4 @@
-from main import *
+from gestures.main import *
 
 if __name__ == '__main__':
     app = Gestures()

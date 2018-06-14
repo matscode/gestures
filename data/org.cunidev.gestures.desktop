@@ -2,7 +2,7 @@
 Version=1.0
 Name=Gestures
 Comment=
-Exec=/usr/bin/gestures
+Exec=gestures
 Icon=org.cunidev.gestures
 Terminal=false
 Type=Application
