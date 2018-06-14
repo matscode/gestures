@@ -4,9 +4,11 @@ from gi.repository import Gtk, Gio, Gdk
 
 import sys
 from os.path import expanduser
-from configfile import ConfigFileHandler
-from gesture import Gesture
-from __version__ import __version__
+from gestures.configfile import ConfigFileHandler
+from gestures.gesture import Gesture
+from gestures.__version__ import __version__
+
+appid = "org.cunidev.gestures"
 
 class ErrorDialog(Gtk.Dialog):
     def __init__(self,parent):
@@ -273,7 +275,7 @@ class MainWindow(Gtk.ApplicationWindow):
         hb.set_show_close_button(True)
         hb.props.title = "Gestures"
         self.set_titlebar(hb)
-
+        
         button = Gtk.Button()
         icon = Gio.ThemedIcon(name="open-menu-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
@@ -330,7 +332,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.box_outer = Gtk.ScrolledWindow()
         self.box_outer.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.add(self.box_outer)
-        self.listbox = Gtk.ListBox()
+        self.listbox = Gtk.ListBox(margin = 15)
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         self.box_outer.add(self.listbox)
 
@@ -523,7 +525,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         for i, gesture in enumerate(self.confFile.gestures):
 
-            row = Gtk.ListBoxRow(margin=5)
+            row = Gtk.ListBoxRow(margin=15)
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, margin=5)
             row.add(hbox)
             vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
@@ -596,7 +598,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 class Gestures(Gtk.Application):
     def __init__(self):
-        Gtk.Application.__init__(self, application_id="org.cunidev.gestures",
+        Gtk.Application.__init__(self, application_id=appid,
                                  flags=Gio.ApplicationFlags.FLAGS_NONE)
         self.connect("activate", self.on_activate)
 
