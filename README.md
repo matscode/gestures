@@ -3,13 +3,13 @@ A minimal Gtk+ GUI app for libinput-gestures
 
 ## Dependencies:
 - Python 3 with `gi` module
-- python-setuptools
+- python3-setuptools
 - xdotool (recommended)
 - libinput-gestures
 - libinput-tools
 
 On Debian/Ubuntu, type:
-`sudo apt install python3 python-setuptools xdotool python3-gi libinput-tools python-gobject`
+`sudo apt install python3 python3-setuptools xdotool python3-gi libinput-tools python-gobject`
 
 To install libinput-gestures, follow the instructions on its official page: https://github.com/bulletmark/libinput-gestures
 
