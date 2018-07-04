@@ -615,12 +615,7 @@ class Gestures(Gtk.Application):
         try:
             confFile = ConfigFileHandler(expanduser("~"), __version__)
             if(confFile.createFileIfNotExisting()):
-                dialog = Gtk.MessageDialog(
-                    win, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "Configuration file not found")
-                dialog.format_secondary_text(
-                    "Don't panic: an empty configuration file has just been generated.")
-                dialog.run()
-                dialog.destroy()
+                print("INFO: An empty configuration file has been successfully generated")
         
             confFile.openFile()
             if not(confFile.isValid()):
