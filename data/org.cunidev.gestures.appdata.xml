@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+​  <id>org.cunidev.gestures.desktop</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <name>Gestures</name>
+  <summary>Modern, minimal GUI app for libinput-gestures</summary>
+  <description>
+​    <p>
+​      A minimal Gtk+ GUI app for Linux touchpad gestures, based on the popular libinput-gestures tool.
+​    </p>
+  </description>
+
+  <launchable type="desktop-id">org.cunidev.gestures.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main window (with bonus cat)</caption>
+      <image>https://img.youtube.com/vi/MrOIEoyijXM/maxresdefault.jpg</image>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://gitlab.com/cunidev/gestures</url>
+  <url type="bugtracker">https://gitlab.com/cunidev/gestures/issues</url>
+  <provides>
+    <binary>gestures</binary>
+  </provides>
+  <releases>
+    <release version="0.1.4.1" date="2018-06-12">
+      <description>
+        <p>Implements setup.py</p>
+      </description>
+    </release>
+  </releases>
+</component>
