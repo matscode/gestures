@@ -607,12 +607,6 @@ class Gestures(Gtk.Application):
         self.add_window(win)
         
         try:
-            self.set_icon(Gtk.IconTheme.get_default().load_icon("org.cunidev.gestures", 128, 0))
-        except:
-            print("WARNING: Can't load app icon!")
-        
-        
-        try:
             confFile = ConfigFileHandler(expanduser("~"), __version__)
             if(confFile.createFileIfNotExisting()):
                 print("INFO: An empty configuration file has been successfully generated")
