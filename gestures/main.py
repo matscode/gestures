@@ -267,8 +267,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.editMode = False
         # window
         Gtk.Window.__init__(self, title="Gestures")
-        self.set_border_width(15)
-        self.set_default_size(600, 400)
 
         # header bar
         hb = Gtk.HeaderBar()
@@ -312,27 +310,33 @@ class MainWindow(Gtk.ApplicationWindow):
         
         popoverBox.add(btnBox)
         self.menuPopover.add(popoverBox)
+        
+        btnbox = Gtk.ButtonBox()
+        btnbox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
+        Gtk.StyleContext.add_class(btnbox.get_style_context(), "linked")
 
         button = Gtk.Button()
         icon = Gio.ThemedIcon(name="list-add-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         button.add(image)
         button.connect("clicked", self.onAdd)
-        hb.pack_start(button)
+        btnbox.add(button)
 
         button = Gtk.ToggleButton()
         icon = Gio.ThemedIcon(name="document-edit-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         button.add(image)
         button.connect("clicked", self.onEditMode)
-        hb.pack_start(button)
+        btnbox.add(button)
+        
+        hb.pack_start(btnbox)
 
         # contents
 
         self.box_outer = Gtk.ScrolledWindow()
         self.box_outer.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.add(self.box_outer)
-        self.listbox = Gtk.ListBox(margin = 15)
+        self.listbox = Gtk.ListBox(margin=0)
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         self.box_outer.add(self.listbox)
 
@@ -515,35 +519,44 @@ class MainWindow(Gtk.ApplicationWindow):
         if(len(self.confFile.gestures) == 0):
             label = Gtk.Label()
             label.set_markup("<big><big>No gestures.</big></big>")
-            #box = Gtk.Box()
             box = Gtk.ListBoxRow(margin=150)
             box.add(label)
-            # self.listbox.set_placeholder(box)
             self.listbox.add(box)
 
             # TODO: fix (ugly and temporary!)
 
         for i, gesture in enumerate(self.confFile.gestures):
 
-            row = Gtk.ListBoxRow(margin=15)
-            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, margin=5)
+            row = Gtk.ListBoxRow(margin=0)
+            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=15, margin = 20)
             row.add(hbox)
-            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+            
+            icon = Gtk.Image.new_from_icon_name("input-touchpad", Gtk.IconSize.LARGE_TOOLBAR)
+            icon.set_pixel_size(80)
+            hbox.pack_start(icon, False, False, 10)
+            
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            vbox.props.valign = Gtk.Align.CENTER
 
             hbox.pack_start(vbox, True, True, 0)
 
-            label1 = Gtk.Label(xalign=0)
-            label1.set_markup("<b>" + gesture.type.title() + " " + gesture.direction +
-                              "</b> <i>(" + str(gesture.fingers) + " fingers)</i>" + "")
+            label = Gtk.Label(xalign=0)
+            label.set_markup("<b>" + str(gesture.fingers) + "-finger " + gesture.type + " " + gesture.direction +
+                              "</b>")
+            vbox.pack_start(label, False, True, 0)
 
             if len(gesture.command) > 74:
                 cmd = gesture.command[:70] + "..."
             else:
                 cmd = gesture.command
-
-            label2 = Gtk.Label(cmd, xalign=0)
-            vbox.pack_start(label1, True, True, 0)
-            vbox.pack_start(label2, True, True, 0)
+            
+            box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            icon = Gtk.Image.new_from_icon_name("utilities-terminal-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+            label = Gtk.Label("  " + cmd, xalign=0)
+            box2.add(icon)
+            box2.add(label)
+            
+            vbox.pack_start(box2, False, True, 0)
 
             if(self.editMode):
                 deleteButton = Gtk.Button()
@@ -559,8 +572,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 editButton.connect("clicked", self.onEdit, i)
 
                 box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+                box.props.valign = Gtk.Align.CENTER
                 Gtk.StyleContext.add_class(box.get_style_context(), "linked")
-
+                
                 box.add(editButton)
                 box.add(deleteButton)
 
@@ -571,7 +585,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 switch = Gtk.Switch()
                 switch.props.active = gesture.enabled
                 switch.props.valign = Gtk.Align.CENTER
-                hbox.pack_start(switch, False, True, 0)
+                hbox.pack_start(switch, False, True, 10)
                 switch.connect("state-set", self.setActive, i)
 
             self.listbox.add(row)
@@ -604,6 +618,7 @@ class Gestures(Gtk.Application):
 
     def on_activate(self, data=None):
         win = MainWindow()
+        win.set_position(Gtk.WindowPosition.CENTER)
         self.add_window(win)
         
         try:
@@ -643,7 +658,7 @@ class Gestures(Gtk.Application):
     
         # load file
         win.setConfFile(confFile)
-        win.set_position(Gtk.WindowPosition.CENTER)
+        win.set_default_size(800, 500)
         win.populate()
         
         try:

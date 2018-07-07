@@ -20,6 +20,9 @@ Please install the above dependencies before proceeding.
 `cd gestures`
 `sudo python3 setup.py install`
 
+Solus users can install Gestures directly from the official repos:
+`sudo eopkg it gestures`
+
 
 ## Video demo:
 
