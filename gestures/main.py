@@ -3,6 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, Gdk
 
 import sys
+import copy
 from os.path import expanduser
 from gestures.configfile import ConfigFileHandler
 from gestures.gesture import Gesture
@@ -31,7 +32,7 @@ class EditDialog(Gtk.Dialog):
             self.curGesture = Gesture("swipe", "up", "echo \"Useless\"", 2)
         else:
             title = "Edit Gesture"
-            self.curGesture = self.confFile.gestures[i]
+            self.curGesture = copy.deepcopy(self.confFile.gestures[i])
 
         Gtk.Dialog.__init__(self, title, parent, 0, Gtk.ButtonsType.NONE)
         self.set_transient_for(parent)
