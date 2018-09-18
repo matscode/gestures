@@ -290,6 +290,10 @@ class MainWindow(Gtk.ApplicationWindow):
         label.set_markup("<b>Gestures</b> " + __version__)
         popoverBox.add(label)
         
+        button = Gtk.Button("About")
+        Gtk.StyleContext.add_class(button.get_style_context(), "flat")
+        button.connect("clicked", self.onAbout)
+        popoverBox.add(button)
         
         btnImport = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.SMALL_TOOLBAR)
         btnImport.set_property("tooltip-text", "Import")
@@ -357,7 +361,28 @@ class MainWindow(Gtk.ApplicationWindow):
         editDialog.run()
         editDialog.destroy()
         self.populate()
-
+    
+    def onAbout(self, widget):
+        about_dialog = Gtk.AboutDialog(transient_for=self, modal=True)
+        authors = ["Raffaele T. (cunidev)"]
+        
+        about_dialog.set_program_name("Gestures")
+        about_dialog.set_comments("A minimal, modern Gtk+ app for Linux touchpad gestures, based on the popular libinput-gestures tool.")
+        about_dialog.set_version(__version__)
+        
+        try:
+            about_dialog.set_logo(Gtk.IconTheme.get_default().load_icon("org.cunidev.gestures", 128, 0))
+        except:
+            pass
+        
+        about_dialog.set_license_type(Gtk.License.GPL_3_0)
+        about_dialog.set_authors(authors)
+        about_dialog.set_website("https://gitlab.com/cunidev/gestures")
+        about_dialog.set_website_label("cunidev's GitLab")
+        about_dialog.set_title("")
+        
+        about_dialog.show()
+        
     def onRowActivated(self, widget, i):
         if(len(self.confFile.gestures) > 0):
             command = self.confFile.gestures[i.get_index()].command
