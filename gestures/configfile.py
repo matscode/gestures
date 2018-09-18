@@ -64,7 +64,7 @@ class ConfigFileHandler:
                     command = ' '.join(line[4:])
 
                 else:
-                    fingers = 0
+                    fingers = 4
                     command = ' '.join(line[3:])
 
                 curGesture = Gesture(
