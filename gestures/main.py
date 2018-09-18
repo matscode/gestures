@@ -2,8 +2,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, Gdk
 
-import sys
-import copy
+import sys, shlex, copy
+from subprocess import Popen
 from os.path import expanduser
 from gestures.configfile import ConfigFileHandler
 from gestures.gesture import Gesture
@@ -338,6 +338,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.box_outer.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.add(self.box_outer)
         self.listbox = Gtk.ListBox(margin=0)
+        self.listbox.connect("row-activated", self.onRowActivated)
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         self.box_outer.add(self.listbox)
 
@@ -357,6 +358,15 @@ class MainWindow(Gtk.ApplicationWindow):
         editDialog.destroy()
         self.populate()
 
+    def onRowActivated(self, widget, i):
+        if(len(self.confFile.gestures) > 0):
+            command = self.confFile.gestures[i.get_index()].command
+            print("Executing command: " + command)
+            try:
+                Popen(shlex.split(command))
+            except:
+                print("Can't execute command!")
+            
     def importFile(self, button):
         dialog = Gtk.FileChooserDialog("Import profile", self, Gtk.FileChooserAction.OPEN, 
                                                   (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -510,7 +520,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def setConfFile(self, confFile):
         self.confFile = confFile
-
+        
     def populate(self):
         # redraw
 
@@ -529,6 +539,7 @@ class MainWindow(Gtk.ApplicationWindow):
         for i, gesture in enumerate(self.confFile.gestures):
 
             row = Gtk.ListBoxRow(margin=0)
+            
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=15, margin = 20)
             row.add(hbox)
             
