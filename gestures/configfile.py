@@ -48,6 +48,9 @@ class ConfigFileHandler:
         for line in self.rawLines:
             validLine = self.validSupportedRegex.match(line)
             if(validLine):
+                print(line)
+                line = line.replace('\t', ' ')
+                print(line)
                 line = line.split(' ')
                 filter(None, line)
 
