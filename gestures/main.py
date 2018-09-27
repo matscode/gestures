@@ -290,12 +290,17 @@ class MainWindow(Gtk.ApplicationWindow):
         label = Gtk.Label(margin=12)
         label.set_markup("<b>Gestures</b> " + __version__)
         popoverBox.add(label)
-        
+
+        separator = Gtk.Separator(margin=5)
+        popoverBox.add(separator)
         button = Gtk.Button("About")
         Gtk.StyleContext.add_class(button.get_style_context(), "flat")
         button.connect("clicked", self.onAbout)
         popoverBox.add(button)
         
+        separator = Gtk.Separator(margin=5)
+        popoverBox.add(separator)
+
         btnImport = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.SMALL_TOOLBAR)
         btnImport.set_property("tooltip-text", "Import")
         btnImport.connect("clicked", self.importFile)
