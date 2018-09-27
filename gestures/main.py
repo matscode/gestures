@@ -10,6 +10,7 @@ from gestures.gesture import Gesture
 from gestures.__version__ import __version__
 
 appid = "org.cunidev.gestures"
+default_command = "notify-send \"Gesture performed\""
 
 class ErrorDialog(Gtk.Dialog):
     def __init__(self,parent):
@@ -29,7 +30,7 @@ class EditDialog(Gtk.Dialog):
 
         if (i == -1):
             title = "Add Gesture"
-            self.curGesture = Gesture("swipe", "up", "echo \"Useless\"", 2)
+            self.curGesture = Gesture("swipe", "up", default_command, 2)
         else:
             title = "Edit Gesture"
             self.curGesture = copy.deepcopy(self.confFile.gestures[i])
