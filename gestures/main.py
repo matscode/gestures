@@ -3,7 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, Gdk
 
 import sys, shlex, copy
-from subprocess import Popen
+from subprocess import Popen, call
 from os.path import expanduser
 from gestures.configfile import ConfigFileHandler
 from gestures.gesture import Gesture
@@ -22,6 +22,54 @@ class ErrorDialog(Gtk.Dialog):
             "Make sure it is correctly installed. The configuration file has been saved anyway.")
         dialog.run()
         dialog.destroy()
+
+class UnsupportedLinesDialog(Gtk.Dialog):
+    def __init__(self, parent, confFile):
+        Gtk.Dialog.__init__(self, "Edit unsupported lines", parent, 0, Gtk.ButtonsType.NONE)
+        self.set_transient_for(parent)
+        self.set_modal(True)
+        self.set_default_size(480, 200)
+        area = self.get_content_area()
+
+
+        hb = Gtk.HeaderBar()
+        hb.set_show_close_button(False)
+
+        cancelButton = Gtk.Button("Cancel")
+        cancelButton.modify_bg(Gtk.StateType.ACTIVE, Gdk.color_parse('red'))
+        hb.pack_start(cancelButton)
+
+        confirmButton = Gtk.Button("Confirm")
+        confirmButton.modify_bg(Gtk.StateType.ACTIVE, Gdk.color_parse('teal'))
+        hb.pack_end(confirmButton)
+        self.set_titlebar(hb)
+
+        confirmButton.connect("clicked", self.onConfirm)
+        cancelButton.connect("clicked", self.onCancel)
+        
+
+        scrolledwindow = Gtk.ScrolledWindow()
+        scrolledwindow.set_hexpand(True)
+        scrolledwindow.set_vexpand(True)
+        area.add(scrolledwindow)
+
+        self.textview = Gtk.TextView()
+        self.textbuffer = self.textview.get_buffer()
+
+        lines = '\n'.join(confFile.validUnsupportedLines[1:])
+        self.textbuffer.set_text(lines)
+        scrolledwindow.add(self.textview)
+
+        self.show_all()
+
+
+    def onCancel(self, widget):
+        self.response(Gtk.ResponseType.CANCEL)
+
+    def onConfirm(self, widget):
+        self.response(Gtk.ResponseType.OK)
+        
+
 
 class EditDialog(Gtk.Dialog):
     def __init__(self, parent, confFile, i=-1):
@@ -293,6 +341,17 @@ class MainWindow(Gtk.ApplicationWindow):
 
         separator = Gtk.Separator(margin=5)
         popoverBox.add(separator)
+
+        button = Gtk.Button("Edit unsupported")
+        Gtk.StyleContext.add_class(button.get_style_context(), "flat")
+        button.connect("clicked", self.onEditFile)
+        #popoverBox.add(button)
+
+        button = Gtk.Button("Edit manually")
+        Gtk.StyleContext.add_class(button.get_style_context(), "flat")
+        button.connect("clicked", self.onEditFileExternal)
+        popoverBox.add(button)
+
         button = Gtk.Button("About")
         Gtk.StyleContext.add_class(button.get_style_context(), "flat")
         button.connect("clicked", self.onAbout)
@@ -367,6 +426,28 @@ class MainWindow(Gtk.ApplicationWindow):
         editDialog.run()
         editDialog.destroy()
         self.populate()
+    
+    def onEditFile(self, widget):
+        dialog = UnsupportedLinesDialog(self, self.confFile)
+        dialog.run()
+        dialog.destroy()
+
+    def onEditFileExternal(self, widget):
+        self.hide()
+        dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.WARNING,
+                                   Gtk.ButtonsType.OK_CANCEL, "Opening file in default text editor")
+        dialog.format_secondary_text(
+            "As Gestures doesn't support real-time file updates yet, external modifications need to be done while Gestures is closed. Would you still like to proceed?")
+        dialog.set_modal(True)
+        
+        if(dialog.run()  == Gtk.ResponseType.OK):
+            dialog.destroy()
+            call(["xdg-open", self.confFile.filePath])
+            sys.exit(0)
+        else:
+            dialog.destroy()
+            self.show()
+        
     
     def onAbout(self, widget):
         about_dialog = Gtk.AboutDialog(transient_for=self, modal=True)
