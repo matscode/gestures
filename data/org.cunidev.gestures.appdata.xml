@@ -24,9 +24,9 @@
     <binary>gestures</binary>
   </provides>
   <releases>
-    <release version="0.1.4.1" date="2018-06-12">
+    <release version="0.2.1" date="2018-09-27">
       <description>
-        <p>Implements setup.py</p>
+        <p>-</p>
       </description>
     </release>
   </releases>
