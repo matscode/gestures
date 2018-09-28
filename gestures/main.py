@@ -5,6 +5,7 @@ from gi.repository import Gtk, Gio, Gdk
 import sys, shlex, copy
 from subprocess import Popen, call
 from os.path import expanduser
+from os import getenv
 from gestures.configfile import ConfigFileHandler
 from gestures.gesture import Gesture
 from gestures.__version__ import __version__
@@ -313,7 +314,8 @@ class EditDialog(Gtk.Dialog):
 
 class MainWindow(Gtk.ApplicationWindow):
 
-    def __init__(self):
+    def __init__(self, isWayland = False):
+        self.isWayland = isWayland
         self.editMode = False
         # window
         Gtk.Window.__init__(self, title="Gestures")
@@ -322,6 +324,9 @@ class MainWindow(Gtk.ApplicationWindow):
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
         hb.props.title = "Gestures"
+        if(self.isWayland):
+            hb.props.subtitle = "(wayland session, no xdotool)"
+
         self.set_titlebar(hb)
         
         button = Gtk.Button()
@@ -415,17 +420,17 @@ class MainWindow(Gtk.ApplicationWindow):
         editDialog = EditDialog(self, self.confFile)
         editDialog.run()
         editDialog.destroy()
-        self.populate()
+        self.populate(self.isWayland)
 
     def onEditMode(self, button):
         self.editMode = button.get_active()
-        self.populate()
+        self.populate(self.isWayland)
 
     def onEdit(self, widget, i):
         editDialog = EditDialog(self, self.confFile, i)
         editDialog.run()
         editDialog.destroy()
-        self.populate()
+        self.populate(self.isWayland)
     
     def onEditFile(self, widget):
         dialog = UnsupportedLinesDialog(self, self.confFile)
@@ -622,7 +627,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 err.showNotInstalledError(self)
 
         dialog.destroy()
-        self.populate()
+        self.populate(self.isWayland)
 
     def showMenu(self, widget):
         if self.menuPopover.get_visible():
@@ -634,7 +639,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def setConfFile(self, confFile):
         self.confFile = confFile
         
-    def populate(self):
+    def populate(self, isWayland = False):
         # redraw
 
         for child in self.listbox.get_children():
@@ -656,9 +661,15 @@ class MainWindow(Gtk.ApplicationWindow):
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=15, margin = 20)
             row.add(hbox)
             
-            icon = Gtk.Image.new_from_icon_name("input-touchpad", Gtk.IconSize.LARGE_TOOLBAR)
-            icon.set_pixel_size(80)
-            hbox.pack_start(icon, False, False, 10)
+            if(isWayland and "xdotool" in gesture.command):
+                icon = Gtk.Image.new_from_icon_name("action-unavailable", Gtk.IconSize.LARGE_TOOLBAR)
+                icon.set_pixel_size(80)
+                hbox.set_property("tooltip-text", "xdotool not available in Wayland")
+                hbox.pack_start(icon, False, False, 10)
+            else:
+                icon = Gtk.Image.new_from_icon_name("input-touchpad", Gtk.IconSize.LARGE_TOOLBAR)
+                icon.set_pixel_size(80)
+                hbox.pack_start(icon, False, False, 10)
             
             vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             vbox.props.valign = Gtk.Align.CENTER
@@ -742,8 +753,13 @@ class Gestures(Gtk.Application):
         self.connect("activate", self.on_activate)
 
     def on_activate(self, data=None):
-        win = MainWindow()
+        isWayland = (getenv("XDG_SESSION_TYPE")  == "wayland")
+        if(isWayland):
+            print("WARNING: xdotool and wmctrl are *NOT* supported by Wayland, meaning keyboard shortcuts and _internal commands will be ignored.\n\n")
+
+        win = MainWindow(isWayland)
         win.set_position(Gtk.WindowPosition.CENTER)
+
         self.add_window(win)
         
         try:
@@ -784,7 +800,7 @@ class Gestures(Gtk.Application):
         # load file
         win.setConfFile(confFile)
         win.set_default_size(800, 500)
-        win.populate()
+        win.populate(isWayland)
         
         try:
             confFile.reloadProcess()
