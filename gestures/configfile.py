@@ -25,9 +25,12 @@ class ConfigFileHandler:
                 return False
 
     def openFile(self):
+        self.swipe_threshold = 0
+
         self.validSupportedRegex = re.compile(
             "^\s*(#D:\s)?gesture\s((swipe)\s(up|down|left|right)\s([3-4]\s)?|(pinch\s(in|out|clockwise|anticlockwise)\s([2-4]\s)?))\s*(.+)")
-        self.validUnsupportedRegex = re.compile("^\s*(device|swipe_threshold)\s")
+        self.validUnsupportedRegex = re.compile("^\s*device\s")
+        self.validSwipeThresholdRegex = re.compile("^\s*swipe_threshold\s*(\d+)\s*$")
         try:
             self.file = open(self.filePath, "r+")
         except:
@@ -71,8 +74,17 @@ class ConfigFileHandler:
                 curGesture = Gesture(
                     type, direction, command, fingers, enabled)
                 self.gestures.append(curGesture)
+
             elif(self.validUnsupportedRegex.match(line)):
                 self.validUnsupportedLines.append(line)
+
+            elif(self.validSwipeThresholdRegex.match(line)):
+                try:
+                    swipe_threshold = int(self.validSwipeThresholdRegex.match(line)[1])
+                    self.swipe_threshold = swipe_threshold
+                except:
+                    pass
+
             elif((line[:1] == "#") and not ("#I: " in line)) or (line == ""):
                 pass
             else:
@@ -98,10 +110,16 @@ class ConfigFileHandler:
         self.fileLines.extend(self.invalidLines)
         self.fileLines.append('\n')
         self.fileLines.extend(self.validUnsupportedLines)
-        self.fileLines.append('\n#Gestures')
+
+        if(self.swipe_threshold >= 0 and self.swipe_threshold <= 100):
+            self.fileLines.append('\n# Swipe threshold (0-100)')
+            self.fileLines.append("swipe_threshold " + str(self.swipe_threshold))
+
+        self.fileLines.append('\n# Gestures')
 
         for curGesture in self.gestures:
             self.fileLines.append(curGesture.make())
+
         self.file.seek(0)
         self.file.write('\n'.join(self.fileLines))
         self.file.truncate()

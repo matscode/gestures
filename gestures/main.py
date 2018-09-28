@@ -24,6 +24,44 @@ class ErrorDialog(Gtk.Dialog):
         dialog.run()
         dialog.destroy()
 
+
+class PreferencesDialog(Gtk.Dialog):
+    def __init__(self,parent, confFile):
+        self.confFile = confFile
+        Gtk.Dialog.__init__(self, "Preferences", parent, 0, Gtk.ButtonsType.NONE)
+        self.set_transient_for(parent)
+        self.set_modal(True)
+        self.set_default_size(480, 100)
+        self.connect("destroy", self.onDestroy)
+        area = self.get_content_area()
+
+        if(self.confFile.swipe_threshold != None):
+            value = self.confFile.swipe_threshold
+        else:
+            value = 0
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin = 10)
+        area.add(box)
+
+        label = Gtk.Label("Swipe threshold")
+        slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=Gtk.Adjustment(value, 0, 100, 5, 10, 0))
+        slider.connect("value-changed", self.onSwipeThresholdChanged)
+        slider.set_hexpand(True)
+        slider.set_digits(0)
+
+        box.add(label)
+        box.add(slider)
+
+        area.show_all()
+
+    def onSwipeThresholdChanged(self, widget):
+        value = int(widget.get_value())
+        if(value >= 0 and value <= 100):
+            self.confFile.swipe_threshold = value
+
+    def onDestroy(self, window):
+        self.confFile.save()
+
 class UnsupportedLinesDialog(Gtk.Dialog):
     def __init__(self, parent, confFile):
         Gtk.Dialog.__init__(self, "Edit unsupported lines", parent, 0, Gtk.ButtonsType.NONE)
@@ -355,6 +393,11 @@ class MainWindow(Gtk.ApplicationWindow):
         button.connect("clicked", self.onEditFileExternal)
         popoverBox.add(button)
 
+        button = Gtk.Button("Preferences")
+        Gtk.StyleContext.add_class(button.get_style_context(), "flat")
+        button.connect("clicked", self.openSettings)
+        popoverBox.add(button)
+
         button = Gtk.Button("About")
         Gtk.StyleContext.add_class(button.get_style_context(), "flat")
         button.connect("clicked", self.onAbout)
@@ -451,7 +494,11 @@ class MainWindow(Gtk.ApplicationWindow):
             dialog.destroy()
             self.show()
         
-    
+    def openSettings(self, widget):
+        dialog = PreferencesDialog(self, self.confFile)
+        dialog.run()
+        dialog.destroy()
+
     def onAbout(self, widget):
         about_dialog = Gtk.AboutDialog(transient_for=self, modal=True)
         authors = ["Raffaele T. (cunidev)"]
@@ -467,7 +514,7 @@ class MainWindow(Gtk.ApplicationWindow):
         
         about_dialog.set_license_type(Gtk.License.GPL_3_0)
         about_dialog.set_authors(authors)
-        about_dialog.set_website("https://gitlab.com/cunidev/gestures")
+        about_dialog.set_website("https://gitlab.com/cunidev")
         about_dialog.set_website_label("cunidev's GitLab")
         about_dialog.set_title("")
         
