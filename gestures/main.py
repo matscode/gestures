@@ -626,8 +626,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def showMenu(self, widget):
         if self.menuPopover.get_visible():
-            self.menuPopover.hide()
+            self.menuPopover.popdown()
         else:
+            self.menuPopover.popup()
             self.menuPopover.show_all()
 
     def setConfFile(self, confFile):
