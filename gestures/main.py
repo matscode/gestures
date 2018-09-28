@@ -324,8 +324,6 @@ class MainWindow(Gtk.ApplicationWindow):
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
         hb.props.title = "Gestures"
-        if(self.isWayland):
-            hb.props.subtitle = "(wayland session, no xdotool)"
 
         self.set_titlebar(hb)
         
