@@ -706,20 +706,16 @@ class MainWindow(Gtk.ApplicationWindow):
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=15, margin = 20)
             row.add(hbox)
             
-            if(isWayland and "xdotool" in gesture.command):
-                icon = Gtk.Image.new_from_icon_name("action-unavailable", Gtk.IconSize.LARGE_TOOLBAR)
-                icon.set_pixel_size(80)
-                hbox.set_property("tooltip-text", "xdotool not available in Wayland")
-                hbox.pack_start(icon, False, False, 10)
-            else:
-                icon = Gtk.Image.new_from_icon_name("input-touchpad", Gtk.IconSize.LARGE_TOOLBAR)
-                icon.set_pixel_size(80)
-                hbox.pack_start(icon, False, False, 10)
+            icon = Gtk.Image.new_from_icon_name("input-touchpad", Gtk.IconSize.LARGE_TOOLBAR)
+            icon.set_pixel_size(80)
+            hbox.pack_start(icon, False, False, 10)
             
             vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             vbox.props.valign = Gtk.Align.CENTER
 
             hbox.pack_start(vbox, True, True, 0)
+
+            hbox.pack_end(vbox, True, True, 0)
 
             label = Gtk.Label(xalign=0)
             label.set_markup("<b>" + str(gesture.fingers) + "-finger " + gesture.type + " " + gesture.direction +
@@ -738,6 +734,16 @@ class MainWindow(Gtk.ApplicationWindow):
             box2.add(label)
             
             vbox.pack_start(box2, False, True, 0)
+
+            if(isWayland and "xdotool" in gesture.command):
+                box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+                icon = Gtk.Image.new_from_icon_name("dialog-warning", Gtk.IconSize.SMALL_TOOLBAR)
+                label = Gtk.Label(xalign=0)
+                label.set_markup(" <span color='darkred'><i><small>Unsupported on Wayland sessions.</small></i></span>")
+                box2.add(icon)
+                box2.add(label)
+
+                vbox.pack_start(box2, False, True, 0)
 
             if(self.editMode):
                 deleteButton = Gtk.Button()
