@@ -457,6 +457,53 @@ class MainWindow(Gtk.ApplicationWindow):
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         self.box_outer.add(self.listbox)
 
+    def initialize(self):
+        try:
+            confFile = ConfigFileHandler(expanduser("~"), __version__)
+            if(confFile.createFileIfNotExisting()):
+                print("INFO: An empty configuration file has been successfully generated")
+
+            confFile.openFile()
+            if not(confFile.isValid()):
+                if (confFile.backup()):
+                    dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
+                                               "The current configuration file hasn't been created with this tool.")
+                    dialog.format_secondary_text("The old file has been backed up to " + confFile.backupPath +
+                                                 ", its contents will be extracted and the conf file has been overridden.")
+                    dialog.run()
+                    dialog.destroy()
+                    confFile.save()
+                else:
+                    dialog = Gtk.MessageDialog(
+                        self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Invalid configuration file, can't backup!")
+                    dialog.format_secondary_text(
+                        "Can't create backup file! For security reasons, this tool can't be run.")
+                    dialog.run()
+                    dialog.destroy()
+                    sys.exit(-1)
+            else:
+                pass
+
+        except:
+            dialog = Gtk.MessageDialog(
+                self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Can't open configuration file.")
+            dialog.format_secondary_text(
+                "The configuration file can't be opened or created, check permissions.")
+            dialog.run()
+            dialog.destroy()
+            sys.exit(-1)
+
+        # load file
+        self.setConfFile(confFile)
+        self.set_default_size(800, 500)
+        self.populate(self.isWayland)
+
+        try:
+            confFile.reloadProcess()
+        except:
+            err = ErrorDialog(self)
+            err.showNotInstalledError(self)
+
     def onAdd(self, widget):
         editDialog = EditDialog(self, self.confFile)
         editDialog.run()
@@ -558,14 +605,7 @@ class MainWindow(Gtk.ApplicationWindow):
             if(dialog.run() == Gtk.ResponseType.OK):
                 if(self.confFile.importFile(path)):
                     dialog.destroy()
-                    dialog = Gtk.MessageDialog(
-                        self, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "Profile imported")
-                    dialog.format_secondary_text(
-                        "Please re-open Gestures for changes to take effect")
-                    dialog.set_modal(True)
-                    dialog.run()
-                    dialog.destroy()
-                    sys.exit(0)
+                    self.initialize()
                 else:
                     dialog.destroy()
                     dialog = Gtk.MessageDialog(
@@ -606,13 +646,15 @@ class MainWindow(Gtk.ApplicationWindow):
             path = dialog.get_filename()
             if(self.confFile.exportFile(path)):
                 dialog.destroy()
-                dialog = Gtk.MessageDialog(
-                    self, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "Profile exported")
-                dialog.format_secondary_text(
-                    "You can find it at "+path)
-                dialog.set_modal(True)
-                dialog.run()
-                dialog.destroy()
+
+                # dialogs are annoying
+                #dialog = Gtk.MessageDialog(
+                #    self, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "Profile exported")
+                #dialog.format_secondary_text(
+                #    "You can find it at "+path)
+                #dialog.set_modal(True)
+                #dialog.run()
+                #dialog.destroy()
             else:
                 dialog.destroy()
                 dialog = Gtk.MessageDialog(
@@ -639,7 +681,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 dialog = Gtk.MessageDialog(
                     self, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "Backup file restored.")
                 dialog.format_secondary_text(
-                    "Gestures will be closed. Please remember that re-opening this app will result in overwriting the configuration file.")
+                    "Gestures will be closed. Please remember that re-opening this app might result in overwriting the current backup file.")
                 dialog.set_modal(True)
                 dialog.run()
                 dialog.destroy()
@@ -813,51 +855,7 @@ class Gestures(Gtk.Application):
 
         self.add_window(win)
         
-        try:
-            confFile = ConfigFileHandler(expanduser("~"), __version__)
-            if(confFile.createFileIfNotExisting()):
-                print("INFO: An empty configuration file has been successfully generated")
-        
-            confFile.openFile()
-            if not(confFile.isValid()):
-                if (confFile.backup()):
-                    dialog = Gtk.MessageDialog(win, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
-                                               "The current configuration file hasn't been created with this tool.")
-                    dialog.format_secondary_text("The old file has been backed up to " + confFile.backupPath +
-                                                 ", its contents will be extracted and the conf file has been overridden.")
-                    dialog.run()
-                    dialog.destroy()
-                    confFile.save()
-                else:
-                    dialog = Gtk.MessageDialog(
-                        win, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Invalid configuration file, can't backup!")
-                    dialog.format_secondary_text(
-                        "Can't create backup file! For security reasons, this tool can't be run.")
-                    dialog.run()
-                    dialog.destroy()
-                    sys.exit(-1)
-            else:
-                pass
-        
-        except:
-            dialog = Gtk.MessageDialog(
-                win, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Can't open configuration file.")
-            dialog.format_secondary_text(
-                "The configuration file can't be opened or created, check permissions.")
-            dialog.run()
-            dialog.destroy()
-            sys.exit(-1)
-    
-        # load file
-        win.setConfFile(confFile)
-        win.set_default_size(800, 500)
-        win.populate(isWayland)
-        
-        try:
-            confFile.reloadProcess()
-        except:
-            err = ErrorDialog(win)
-            err.showNotInstalledError(win)
+        win.initialize()
             
         win.show_all()
     
