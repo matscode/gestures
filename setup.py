@@ -22,7 +22,7 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     ],
     package_data    = {'gestures': ['data/style.css']},
-    data_files      = [("share/applications", ["data/org.cunidev.gestures.desktop"]),
-                       ("share/metainfo", ["data/org.cunidev.gestures.appdata.xml"]),
-                       ("share/icons/hicolor/scalable/apps/", ["data/org.cunidev.gestures.svg"])]
+    data_files      = [("/usr/share/applications", ["data/org.cunidev.gestures.desktop"]),
+                       ("/usr/share/metainfo", ["data/org.cunidev.gestures.appdata.xml"]),
+                       ("/usr/share/icons/hicolor/scalable/apps/", ["data/org.cunidev.gestures.svg"])]
 )
