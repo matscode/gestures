@@ -220,7 +220,28 @@ class EditDialog(Gtk.Dialog):
         label.set_markup("<b>Command</b>")
         hbox.pack_start(label, False, False, 0)
 
+
+        suggestions = [
+            'xdotool key [code] # simulate keystroke',
+            '_internal ws_[direction] # switch workspace',
+            'nohup [name] # launch GUI app',
+            'notify_send [text] # send notification'
+            ]
+        for gesture in self.confFile.gestures:
+            suggestions.append(gesture.command)
+
+        suggestions = list(set(suggestions)) # remove duplicates
+
+        liststore = Gtk.ListStore(str)
+        for s in suggestions:
+            liststore.append([s])
+
+        completion = Gtk.EntryCompletion()
+        completion.set_model(liststore)
+        completion.set_text_column(0)
+
         self.commandInput = Gtk.Entry()
+        self.commandInput.set_completion(completion)
         self.commandInput.set_text(self.curGesture.command)
         hbox.pack_start(self.commandInput, True, True, 0)
 
