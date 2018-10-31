@@ -212,25 +212,9 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.destroy()
 
     def onAbout(self, widget):
-        about_dialog = Gtk.AboutDialog(transient_for=self, modal=True)
-        authors = ["Raffaele T. (cunidev)"]
-        
-        about_dialog.set_program_name("Gestures")
-        about_dialog.set_comments("A minimal, modern Gtk+ app for Linux touchpad gestures, based on the popular libinput-gestures tool.")
-        about_dialog.set_version(__version__)
-        
-        try:
-            about_dialog.set_logo(Gtk.IconTheme.get_default().load_icon("org.cunidev.gestures", 128, 0))
-        except:
-            pass
-        
-        about_dialog.set_license_type(Gtk.License.GPL_3_0)
-        about_dialog.set_authors(authors)
-        about_dialog.set_website("https://gitlab.com/cunidev")
-        about_dialog.set_website_label("cunidev's GitLab")
-        about_dialog.set_title("")
-        
-        about_dialog.show()
+        about_dialog = AppAboutDialog(self)
+        about_dialog.run()
+        about_dialog.destroy()
         
     def onRowActivated(self, widget, i):
         if(len(self.confFile.gestures) > 0):
