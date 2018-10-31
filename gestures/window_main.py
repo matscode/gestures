@@ -2,7 +2,9 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio
 
-import sys, shlex, copy
+import shlex
+from shlex import split
+from sys import exit
 from subprocess import Popen, call
 from os.path import expanduser
 from os import getenv
@@ -10,10 +12,10 @@ from gestures.configfile import ConfigFileHandler
 from gestures.gesture import Gesture
 from gestures.__version__ import __version__
 
-from .dialog_preferences import *
-from .dialog_error import *
-from .dialog_edit import *
-from .dialog_about import *
+from .dialog_preferences import PreferencesDialog, UnsupportedLinesDialog
+from .dialog_error import ErrorDialog
+from .dialog_edit import EditDialog
+from .dialog_about import AppAboutDialog
 
 class MainWindow(Gtk.ApplicationWindow):
 
@@ -145,7 +147,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         "Can't create backup file! For security reasons, this tool can't be run.")
                     dialog.run()
                     dialog.destroy()
-                    sys.exit(-1)
+                    exit(-1)
             else:
                 pass
 
@@ -156,7 +158,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 "The configuration file can't be opened or created, check permissions.")
             dialog.run()
             dialog.destroy()
-            sys.exit(-1)
+            exit(-1)
 
         # load file
         self.setConfFile(confFile)
@@ -201,7 +203,7 @@ class MainWindow(Gtk.ApplicationWindow):
         if(dialog.run()  == Gtk.ResponseType.OK):
             dialog.destroy()
             call(["xdg-open", self.confFile.filePath])
-            sys.exit(0)
+            exit(0)
         else:
             dialog.destroy()
             self.show()
@@ -221,7 +223,7 @@ class MainWindow(Gtk.ApplicationWindow):
             command = self.confFile.gestures[i.get_index()].command
             print("Executing command: " + command)
             try:
-                Popen(shlex.split(command))
+                Popen(split(command))
             except:
                 print("Can't execute command!")
             
@@ -334,7 +336,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 dialog.set_modal(True)
                 dialog.run()
                 dialog.destroy()
-                sys.exit(0)
+                exit(0)
             else:
                 dialog.destroy()
                 dialog = Gtk.MessageDialog(

@@ -1,8 +1,8 @@
 from subprocess import call, Popen
-import os.path
+from os.path import isfile
 from shutil import copyfile
 from gestures.gesture import Gesture
-import re
+from re import compile
 
 
 class ConfigFileHandler:
@@ -13,7 +13,7 @@ class ConfigFileHandler:
         self.backupPath = path + "/.config/libinput-gestures.conf.bak"
 
     def createFileIfNotExisting(self):
-        if(os.path.isfile(self.filePath)):
+        if(isfile(self.filePath)):
             return False
         else:
             try:
@@ -27,10 +27,10 @@ class ConfigFileHandler:
     def openFile(self):
         self.swipe_threshold = 0
 
-        self.validSupportedRegex = re.compile(
+        self.validSupportedRegex = compile(
             "^\s*(#D:\s)?gesture\s((swipe)\s(up|down|left|right)\s([3-4]\s)?|(pinch\s(in|out|clockwise|anticlockwise)\s([2-4]\s)?))\s*(.+)")
-        self.validUnsupportedRegex = re.compile("^\s*device\s")
-        self.validSwipeThresholdRegex = re.compile("^\s*swipe_threshold\s*(\d+)\s*$")
+        self.validUnsupportedRegex = compile("^\s*device\s")
+        self.validSwipeThresholdRegex = compile("^\s*swipe_threshold\s*(\d+)\s*$")
         try:
             self.file = open(self.filePath, "r+")
         except:
