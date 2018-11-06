@@ -125,7 +125,7 @@ class EditDialog(Gtk.Dialog):
             'xdotool key [code] # simulate keystroke',
             '_internal ws_[direction] # switch workspace',
             'nohup [name] # launch GUI app',
-            'notify_send [text] # send notification'
+            'notify-send [text] # send notification'
             ]
         for gesture in self.confFile.gestures:
             suggestions.append(gesture.command)
