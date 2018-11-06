@@ -25,57 +25,49 @@ class EditDialog(Gtk.Dialog):
         Gtk.Dialog.__init__(self, title, parent, 0, Gtk.ButtonsType.NONE)
         self.set_transient_for(parent)
         self.set_modal(True)
-        self.set_default_size(480, 200)
 
         area = self.get_content_area()
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-                      spacing=15, margin=10)
-        area.add(box)
+        grid = Gtk.Grid(margin=20, row_spacing=5)
+        area.add(grid)
+        self.set_default_size(10,10) # default to min size
 
-        hbox = Gtk.Box(spacing=5)
-        box.add(hbox)
-
-        label = Gtk.Label()
+        label = Gtk.Label(halign=Gtk.Align.START)
         label.set_markup("<b>Type</b>")
-        hbox.pack_start(label, False, False, 0)
+        grid.add(label)
 
-        self.buttonTypeSwipe = Gtk.RadioButton.new_with_label_from_widget(
-            None, "Swipe")
-        hbox.pack_start(self.buttonTypeSwipe, False, False, 0)
+        self.buttonTypeSwipe = Gtk.RadioButton.new_with_label_from_widget(None, "Swipe")
+        grid.attach(self.buttonTypeSwipe, 1, 0, 1, 1)
 
-        self.buttonTypePinch = Gtk.RadioButton.new_from_widget(
-            self.buttonTypeSwipe)
+        self.buttonTypePinch = Gtk.RadioButton.new_from_widget(self.buttonTypeSwipe)
         self.buttonTypePinch.set_label("Pinch")
-        hbox.pack_start(self.buttonTypePinch, False, False, 0)
+        grid.attach(self.buttonTypePinch, 2, 0, 1, 1)
 
         self.buttonTypeSwipe.set_active((self.curGesture.type != "pinch"))
         self.buttonTypePinch.set_active((self.curGesture.type == "pinch"))
 
-        directionBox = Gtk.Box(spacing=5)
-        box.add(directionBox)
 
-        label = Gtk.Label()
+        label = Gtk.Label(halign=Gtk.Align.START)
         label.set_markup("<b>Direction</b>")
-        directionBox.pack_start(label, False, False, 0)
+        grid.attach(label, 0, 1, 1, 1)
 
         self.buttonDirection1 = Gtk.RadioButton.new_with_label_from_widget(
             None, "Up")
-        directionBox.pack_start(self.buttonDirection1, False, False, 0)
+        grid.attach(self.buttonDirection1, 1, 1, 1, 1)
 
         self.buttonDirection2 = Gtk.RadioButton.new_from_widget(
             self.buttonDirection1)
         self.buttonDirection2.set_label("Down")
-        directionBox.pack_start(self.buttonDirection2, False, False, 0)
+        grid.attach(self.buttonDirection2, 2, 1, 1, 1)
 
         self.buttonDirection3 = Gtk.RadioButton.new_from_widget(
             self.buttonDirection1)
         self.buttonDirection3.set_label("Left")
-        directionBox.pack_start(self.buttonDirection3, False, False, 0)
+        grid.attach(self.buttonDirection3, 3, 1, 1, 1)
 
         self.buttonDirection4 = Gtk.RadioButton.new_from_widget(
             self.buttonDirection1)
         self.buttonDirection4.set_label("Right")
-        directionBox.pack_start(self.buttonDirection4, False, False, 0)
+        grid.attach(self.buttonDirection4, 4, 1, 1, 1)
 
         # 1: up/in 2: down/out 3: left/clockwise 4: right/anticlockwise
         self.buttonDirection1.set_active(
@@ -87,38 +79,33 @@ class EditDialog(Gtk.Dialog):
         self.buttonDirection4.set_active((self.curGesture.direction == "right") or (
             self.curGesture.direction == "anticlockwise"))
 
-        hbox = Gtk.Box(spacing=5)
-        box.add(hbox)
-
-        label = Gtk.Label()
+        label = Gtk.Label(halign=Gtk.Align.START)
         label.set_markup("<b>Fingers</b>")
-        hbox.pack_start(label, False, False, 0)
+        grid.attach(label, 0, 2, 1, 1)
 
         self.buttonFinger2 = Gtk.RadioButton.new_with_label_from_widget(
             None, "Two")
-        hbox.pack_start(self.buttonFinger2, False, False, 0)
+        grid.attach(self.buttonFinger2, 1, 2, 1, 1)
 
         self.buttonFinger3 = Gtk.RadioButton.new_from_widget(
             self.buttonFinger2)
         self.buttonFinger3.set_label("Three")
-        hbox.pack_start(self.buttonFinger3, False, False, 0)
+        grid.attach(self.buttonFinger3, 2, 2, 1, 1)
 
         self.buttonFinger4 = Gtk.RadioButton.new_from_widget(
             self.buttonFinger2)
         self.buttonFinger4.set_label("Four")
-        hbox.pack_start(self.buttonFinger4, False, False, 0)
+        grid.attach(self.buttonFinger4, 3, 2, 1, 1)
 
         if (self.curGesture.fingers != 0):
             self.buttonFinger2.set_active((int(self.curGesture.fingers) == 2))
             self.buttonFinger3.set_active((int(self.curGesture.fingers) == 3))
             self.buttonFinger4.set_active((int(self.curGesture.fingers) == 4))
 
-        hbox = Gtk.Box(spacing=5)
-        box.add(hbox)
 
-        label = Gtk.Label()
+        label = Gtk.Label(halign=Gtk.Align.START)
         label.set_markup("<b>Command</b>")
-        hbox.pack_start(label, False, False, 0)
+        grid.attach(label, 0, 3, 1, 1)
 
 
         suggestions = [
@@ -143,7 +130,7 @@ class EditDialog(Gtk.Dialog):
         self.commandInput = Gtk.Entry()
         self.commandInput.set_completion(completion)
         self.commandInput.set_text(self.curGesture.command)
-        hbox.pack_start(self.commandInput, True, True, 0)
+        grid.attach(self.commandInput, 1, 3, 4, 1)
 
         # header bar
         hb = Gtk.HeaderBar()
@@ -179,6 +166,7 @@ class EditDialog(Gtk.Dialog):
         
         confirmButton.set_can_default(True)
         confirmButton.grab_default()
+        # TODO: default not grabbed when other fields are focused
         
         self.show_all()
         
@@ -208,12 +196,12 @@ class EditDialog(Gtk.Dialog):
 
     def setFingerRadios(self, type):
         if(type == "pinch"):
-            self.buttonFinger2.set_visible(True)
+            self.buttonFinger2.set_sensitive(True)
         else:
             if(self.buttonFinger2.get_active() == True):
                 self.buttonFinger3.set_active(True)
                 
-            self.buttonFinger2.set_visible(False)
+            self.buttonFinger2.set_sensitive(False)
 
     def correctDirections(self):
         if(self.buttonDirection2.get_active()):
