@@ -2,10 +2,7 @@
 A minimal Gtk+ GUI app for libinput-gestures
 
 ## Video demo:
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=iNiokwCALUc
-" target="_blank"><img src="http://img.youtube.com/vi/iNiokwCALUc/0.jpg" 
-alt="(click to open video)" width="480" height="360" border="10" /></a>
+<a href="https://www.youtube.com/watch?feature=player_embedded&v=iNiokwCALUc" target="_blank"><img src="https://img.youtube.com/vi/iNiokwCALUc/0.jpg" alt="(click to open video)" width="480" height="360" border="10" /></a>
 
 ## Wiki
 [The wiki](https://gitlab.com/cunidev/gestures/wikis/home) is still quite small, but it might help, for example, to find useful commands for actions like workspace manipulation and keystroke emulation under Xorg and Wayland.
@@ -22,7 +19,6 @@ On Debian/Ubuntu, type:
 
 To install libinput-gestures, follow the instructions on its official page: https://github.com/bulletmark/libinput-gestures
 
-
 ## Install
 
 ### On Arch Linux
@@ -36,10 +32,6 @@ Search for *Gestures* in Solus Software Center or install from command line: `su
 ### From source
 Please install the above dependencies before proceeding.
 
-`git clone https://gitlab.com/cunidev/gestures`
-`cd gestures`
+`git clone https://gitlab.com/cunidev/gestures`<br>
+`cd gestures`<br>
 `sudo python3 setup.py install`
-
-
-
-
