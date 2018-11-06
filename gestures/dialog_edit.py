@@ -30,6 +30,7 @@ class EditDialog(Gtk.Dialog):
         grid = Gtk.Grid(margin=20, row_spacing=5)
         area.add(grid)
         self.set_default_size(10,10) # default to min size
+        self.set_resizable(False) # hopefully Gtk won't break the above soon or this will mean having 10x10px dialogs
 
         label = Gtk.Label(halign=Gtk.Align.START)
         label.set_markup("<b>Type</b>")
@@ -104,7 +105,7 @@ class EditDialog(Gtk.Dialog):
 
 
         label = Gtk.Label(halign=Gtk.Align.START)
-        label.set_markup("<b>Command</b>")
+        label.set_markup("<b>Command</b>   ")
         grid.attach(label, 0, 3, 1, 1)
 
 
@@ -186,6 +187,7 @@ class EditDialog(Gtk.Dialog):
             self.buttonDirection2.set_label("Down")
             self.buttonDirection3.set_label("Left")
             self.buttonDirection4.set_label("Right")
+        self.resize(10,10) # should shrink to contents
 
     def onTypeToggle(self, widget, i, type):
         self.curGesture.type = type
