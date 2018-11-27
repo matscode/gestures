@@ -1,6 +1,6 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, Pango
 
 import shlex
 from shlex import split
@@ -414,15 +414,11 @@ class MainWindow(Gtk.ApplicationWindow):
             label.set_markup("<b>" + str(gesture.fingers) + "-finger " + gesture.type + " " + gesture.direction +
                               "</b>")
             vbox.pack_start(label, False, True, 0)
-
-            if len(gesture.command) > 74:
-                cmd = gesture.command[:70] + "..."
-            else:
-                cmd = gesture.command
             
             box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
             icon = Gtk.Image.new_from_icon_name("utilities-terminal-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
-            label = Gtk.Label("  " + cmd, xalign=0)
+            label = Gtk.Label("  " + gesture.command, xalign=0)
+            label.set_ellipsize(Pango.EllipsizeMode.END)
             box2.add(icon)
             box2.add(label)
             
