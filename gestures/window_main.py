@@ -41,13 +41,32 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.menuPopover = Gtk.Popover.new(button)
         self.menuPopover.set_size_request(250, 100)
-        popoverBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        
-        label = Gtk.Label(margin=12)
-        label.set_markup("<b>Gestures</b> " + __version__)
-        popoverBox.add(label)
+        popoverBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin=5)
 
-        separator = Gtk.Separator(margin=5)
+        # upper toolbar
+        btnImport = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.LARGE_TOOLBAR)
+        btnImport.set_property("tooltip-text", "Import")
+        btnImport.connect("clicked", self.importFile)
+        
+        btnExport = Gtk.Button.new_from_icon_name("document-save", Gtk.IconSize.LARGE_TOOLBAR)
+        btnExport.set_property("tooltip-text", "Export")
+        btnExport.connect("clicked", self.exportFile)
+        
+        btnRestore = Gtk.Button.new_from_icon_name("document-revert", Gtk.IconSize.LARGE_TOOLBAR)
+        btnRestore.set_property("tooltip-text", "Restore backup")
+        btnRestore.connect("clicked", self.restoreBackup)
+        
+        btnBox = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
+        btnBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
+        btnBox.add(btnImport)
+        btnBox.add(btnExport)
+        btnBox.add(btnRestore)
+        
+        popoverBox.add(btnBox)
+
+        # other buttons - TODO: make Gio.Menu
+        
+        separator = Gtk.Separator()
         popoverBox.add(separator)
 
         button = Gtk.Button("Edit unsupported")
@@ -69,29 +88,7 @@ class MainWindow(Gtk.ApplicationWindow):
         Gtk.StyleContext.add_class(button.get_style_context(), "flat")
         button.connect("clicked", self.onAbout)
         popoverBox.add(button)
-        
-        separator = Gtk.Separator(margin=5)
-        popoverBox.add(separator)
 
-        btnImport = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.SMALL_TOOLBAR)
-        btnImport.set_property("tooltip-text", "Import")
-        btnImport.connect("clicked", self.importFile)
-        
-        btnExport = Gtk.Button.new_from_icon_name("document-save", Gtk.IconSize.SMALL_TOOLBAR)
-        btnExport.set_property("tooltip-text", "Export")
-        btnExport.connect("clicked", self.exportFile)
-        
-        btnRestore = Gtk.Button.new_from_icon_name("document-revert", Gtk.IconSize.SMALL_TOOLBAR)
-        btnRestore.set_property("tooltip-text", "Restore backup")
-        btnRestore.connect("clicked", self.restoreBackup)
-        
-        btnBox = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL, margin=12)
-        btnBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
-        btnBox.add(btnImport)
-        btnBox.add(btnExport)
-        btnBox.add(btnRestore)
-        
-        popoverBox.add(btnBox)
         self.menuPopover.add(popoverBox)
         
         btnbox = Gtk.ButtonBox()
