@@ -23,7 +23,6 @@ To install libinput-gestures, follow the instructions on its official page: http
 
 ### On Arch Linux
 Gestures is also [available in Arch AUR](https://aur.archlinux.org/packages/gestures) (disclaimer: I'm *not* the maintainer).
-To install: `sudo yaourt -S gestures`
 
 ### On Solus
 Solus users can install Gestures directly from the official repos:
